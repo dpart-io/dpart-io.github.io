@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flight Info</title>
+</head>
+<body>
+<pre id="output">Loading...</pre>
+<script>
+(async () => {
+  const url = "https://ca-appsync.lz.changiairport.com/graphql";
+  const headers = {
+    "Content-Type": "application/json",
+    "X-Api-Key": "da2-umfoldhfsnhh7e3zgbtyr3p6um",
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Encoding": "gzip, br",
+    "User-Agent": "Mozilla/5.0"
+  };
+
+  const payload = {
+    query: `query {
+      getFlights(direction:"arr",flight_number:"SQ331",scheduled_date:"2024-12-06") {
+        flights {
+          terminal
+          current_gate
+          actual_timestamp
+          flight_status
+        }
+      }
+    }`
+  };
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(payload)
+  });
+
+  const data = await response.json();
+  document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+})();
+</script>
+</body>
+</html>
