@@ -24,7 +24,7 @@
 </style>
 </head>
 <body>
-<h1>Flight Information</h1>
+<h1>Flight Information: SQ335 Arriving at Changi</h1>
 <div id="output">Loading...</div>
 <script>
 (async () => {
@@ -47,6 +47,7 @@
           terminal
           master_flight_number
           scheduled_time
+          scheduled_date
         }
       }
     }`
@@ -64,17 +65,33 @@
   const outputDiv = document.getElementById("output");
   outputDiv.innerHTML = ""; // Clear loading text
 
+  function formatTimestampWithDate(timestamp) {
+    if (!timestamp) return "N/A";
+    const date = new Date(timestamp);
+    const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    const timeOptions = { hour: 'numeric', minute: 'numeric', hour12: true };
+    return `${date.toLocaleDateString(undefined, dateOptions)} ${date.toLocaleTimeString(undefined, timeOptions)}`;
+  }
+
+  function formatDate(dateString) {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString(undefined, options);
+  }
+
   if (flights.length > 0) {
     flights.forEach(flight => {
       const flightDiv = document.createElement("div");
       flightDiv.className = "flight-info";
 
       flightDiv.innerHTML = `
-        <div><span class="label">Estimated Timestamp:</span> ${flight.estimated_timestamp || "N/A"}</div>
-        <div><span class="label">Display Timestamp:</span> ${flight.display_timestamp || "N/A"}</div>
+        <div><span class="label">Estimated Time:</span> ${formatTimestampWithDate(flight.estimated_timestamp)}</div>
+        <div><span class="label">Display Time:</span> ${formatTimestampWithDate(flight.display_timestamp)}</div>
         <div><span class="label">Display Belt:</span> ${flight.display_belt || "N/A"}</div>
         <div><span class="label">Terminal:</span> ${flight.terminal || "N/A"}</div>
         <div><span class="label">Master Flight Number:</span> ${flight.master_flight_number || "N/A"}</div>
+        <div><span class="label">Scheduled Date:</span> ${formatDate(flight.scheduled_date)}</div>
         <div><span class="label">Scheduled Time:</span> ${flight.scheduled_time || "N/A"}</div>
       `;
 
