@@ -3,9 +3,29 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Flight Info</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  .flight-info {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #f9f9f9;
+  }
+  .flight-info div {
+    margin-bottom: 5px;
+  }
+  .label {
+    font-weight: bold;
+  }
+</style>
 </head>
 <body>
-<pre id="output">Loading...</pre>
+<h1>Flight Information</h1>
+<div id="output">Loading...</div>
 <script>
 (async () => {
   const url = "https://ca-appsync.lz.changiairport.com/graphql";
@@ -19,26 +39,14 @@
 
   const payload = {
     query: `query {
-      getFlights(direction:"arr",flight_number:"SQ331",scheduled_date:"2024-12-06") {
+      getFlights(direction:"arr",flight_number:"SQ335",scheduled_date:"2024-12-20") {
         flights {
-        actual_timestamp
-        airport
-        current_gate
-        display_belt
-        display_checkinrowctr
-        display_gate
-        display_timestamp
-        estimated_timestamp
-        firstbag_timestamp
-        flight_status
-        last_updated_timestamp
-        master_flight_number
-        previous_gate
-        scheduled_date
-        scheduled_time
-        technical_flight_status1
-        technical_flight_status2
-        terminal
+          estimated_timestamp
+          display_timestamp
+          display_belt
+          terminal
+          master_flight_number
+          scheduled_time
         }
       }
     }`
@@ -51,7 +59,30 @@
   });
 
   const data = await response.json();
-  document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+  const flights = data?.data?.getFlights?.flights || [];
+
+  const outputDiv = document.getElementById("output");
+  outputDiv.innerHTML = ""; // Clear loading text
+
+  if (flights.length > 0) {
+    flights.forEach(flight => {
+      const flightDiv = document.createElement("div");
+      flightDiv.className = "flight-info";
+
+      flightDiv.innerHTML = `
+        <div><span class="label">Estimated Timestamp:</span> ${flight.estimated_timestamp || "N/A"}</div>
+        <div><span class="label">Display Timestamp:</span> ${flight.display_timestamp || "N/A"}</div>
+        <div><span class="label">Display Belt:</span> ${flight.display_belt || "N/A"}</div>
+        <div><span class="label">Terminal:</span> ${flight.terminal || "N/A"}</div>
+        <div><span class="label">Master Flight Number:</span> ${flight.master_flight_number || "N/A"}</div>
+        <div><span class="label">Scheduled Time:</span> ${flight.scheduled_time || "N/A"}</div>
+      `;
+
+      outputDiv.appendChild(flightDiv);
+    });
+  } else {
+    outputDiv.textContent = "No flight information available.";
+  }
 })();
 </script>
 </body>
